@@ -10,6 +10,10 @@ monotonicAlgorithm <- R6::R6Class("monotonicAlgorithm",
          stop("downloader package needed for this function to work. Please install it.",call. = FALSE)
        }
 
+<<<<<<< HEAD
+     }
+
+=======
        # 1 Create folder structure necessary for save file
        private$generateDir()
 
@@ -33,6 +37,7 @@ monotonicAlgorithm <- R6::R6Class("monotonicAlgorithm",
        }
        return(mydf)
      }
+>>>>>>> 256c36ff291634eb269924dc0d1d583debeed7ae
 ),
  private = list(
 
@@ -42,12 +47,36 @@ monotonicAlgorithm <- R6::R6Class("monotonicAlgorithm",
      #downloadPath
      downloadPath = file.path(system.file(package = "Monotonic"), "download"),
 
+<<<<<<< HEAD
+     #exes path
+=======
      #files path
+>>>>>>> 256c36ff291634eb269924dc0d1d583debeed7ae
      filesPath = file.path(system.file(package = "Monotonic"), "files"),
 
      #dataset path
      datasetPath = file.path(system.file(package = "Monotonic"), "dataset"),
 
+<<<<<<< HEAD
+     githubPath = "https://github.com/raulopez/Monotonic/raw/master/jar",
+
+     #Private function
+     #Download Jar
+     download_jar = function(zip_folder_name,name_zip){
+
+       url_path <- file.path(private$githubPath,zip_folder_name,name_zip)
+       path <- file.path(private$downloadPath,zip_folder_name)
+       zip_path <- file.path(private$downloadPath,zip_folder_name,name_zip)
+
+       downloader::download(url=url_path ,destfile = zip_path, mode ="wb", quiet = TRUE)
+       unzip(zipfile = zip_path, exdir = path)
+     },
+
+     #Create dataset files function
+     create_dataset = function(dataset,name,label_class,folder_name){
+
+       name_file <- file.path(folder_name,name)
+=======
      #json path
      jsonPath = file.path(system.file(package = "Monotonic"), "json","result0e0.json"),
 
@@ -65,6 +94,7 @@ monotonicAlgorithm <- R6::R6Class("monotonicAlgorithm",
      create_dataset = function(dataset,name,label_class){
 
        name_file <- file.path(private$filesPath,name)
+>>>>>>> 256c36ff291634eb269924dc0d1d583debeed7ae
 
        output <- NULL
        input <- NULL
@@ -124,45 +154,101 @@ monotonicAlgorithm <- R6::R6Class("monotonicAlgorithm",
      },
 
      #Create config
+<<<<<<< HEAD
+     create_config = function(train,test,folder_name,name_algorithm){
+
+
+       name_file <- file.path(folder_name,private$configName)
+
+       string <- paste0("algorithm = ",name_algorithm)
+=======
      create_config = function(train,test){
 
 
        name_file <- paste0(private$filesPath,"/",private$configName)
 
        string <- "algorithm = Monotonic Induction Decision"
+>>>>>>> 256c36ff291634eb269924dc0d1d583debeed7ae
        write(string,file=name_file,append = TRUE)
        input <- paste("inputData =",shQuote(train),shQuote(test),shQuote(test),sep=' ')
        write(input,file=name_file,append = TRUE)
 
+<<<<<<< HEAD
+       output_train <- file.path(folder_name,"result0.tra")
+       output_test <- file.path(folder_name,"result0.tst")
+       output_resultado <- file.path(folder_name,"result0e0.txt")
+       output_json <- file.path(folder_name,"result0e0.json")
+=======
        output_train <- file.path(system.file(package = "monotonicTree"),"files","result0.tra")
        output_test <- file.path(system.file(package = "monotonicTree"),"files","result0.tst")
        output_resultado <- file.path(system.file(package = "monotonicTree"),"files","result0e0.txt")
        output_json <- file.path(system.file(package = "monotonicTree"),"result0e0.json")
+>>>>>>> 256c36ff291634eb269924dc0d1d583debeed7ae
 
        output <- paste("outputData =",shQuote(output_train),shQuote(output_test),shQuote(output_resultado),shQuote(output_json),sep=' ')
        write(output,file=name_file,append = TRUE)
      },
 
      #Generate experiment directory
+<<<<<<< HEAD
+     generateDir = function(name){
+
+       dir.create(private$downloadPath,showWarnings = FALSE)
+       dir.create(private$filesPath,showWarnings = FALSE)
+       dir.create(private$datasetPath,showWarnings = FALSE)
+
+       path_d <- file.path(private$downloadPath,name)
+       path_f <- file.path(private$filesPath,name)
+
+       unlink(list.files(path_f,full.names = TRUE), recursive = TRUE, force = TRUE)
+       unlink(list.files(path_d,full.names = TRUE), recursive = TRUE, force = TRUE)
+
+       dir.create(path_f,showWarnings = FALSE)
+       dir.create(path_d,showWarnings = FALSE)
+=======
      generateDir = function(){
        dir.create(private$downloadPath,showWarnings = FALSE)
        dir.create(private$filesPath,showWarnings = FALSE)
        dir.create(private$datasetPath,showWarnings = FALSE)
+>>>>>>> 256c36ff291634eb269924dc0d1d583debeed7ae
      },
 
      #Execute experiment
      execute = function(jar,config){
+<<<<<<< HEAD
+
+       execute <- paste("java -jar",jar,config,sep=" ")
+       system(execute,intern = FALSE,show.output.on.console = FALSE)
+=======
        execute <- paste("java -jar",jar,config,sep=" ")
        system(execute,intern = TRUE,show.output.on.console = FALSE)
+>>>>>>> 256c36ff291634eb269924dc0d1d583debeed7ae
 
      },
 
      #Remove all files in folder files
+<<<<<<< HEAD
+     remove_files_folder = function(path){
+       if(length(list.files(path)) > 0){
+         unlink(list.files(path,full.names = TRUE), recursive = TRUE, force = TRUE)
+       }
+     },
+
+     #measures function
+     measures = function(path){
+
+       mydf <- jsonlite::fromJSON(path)
+       dim(mydf$matrix_test) <- c(dim(mydf$matrix_test)[1],dim(mydf$matrix_test)[1])
+       dim(mydf$matrix_train) <- c(dim(mydf$matrix_train)[1],dim(mydf$matrix_train)[1])
+       return(mydf)
+     }
+=======
      remove_files_folder = function(){
        if(length(list.files(private$filesPath)) > 0){
          unlink(list.files(private$filesPath,full.names = TRUE), recursive = TRUE, force = TRUE)
        }
      }
 
+>>>>>>> 256c36ff291634eb269924dc0d1d583debeed7ae
    )
 )
