@@ -144,7 +144,7 @@ monotonicAlgorithm <- R6::R6Class("monotonicAlgorithm",
      execute = function(jar,config){
 
        execute <- paste("java -jar",jar,config,sep=" ")
-       system(execute,intern = FALSE,show.output.on.console = FALSE)
+       system(execute,intern = TRUE,show.output.on.console = TRUE)
 
      },
 

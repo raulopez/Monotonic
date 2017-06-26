@@ -74,8 +74,8 @@ KNNmcR6 <- R6::R6Class("KNNmc",
         name_file <- file.path(private$filesPath,self$name,private$configName)
 
         if(seed == 0){
-          seed <- runif(1, min=1000000000, max=9999999999)
-          seed <- signif(seed, digits = 10)
+          seed <- runif(1, min=0, max=100000)
+          seed <- signif(seed, digits = 8)
 
         }
         write(paste("\nseed = ",seed,sep=""),file=name_file,append = TRUE)
