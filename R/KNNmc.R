@@ -75,8 +75,10 @@ KNNmcR6 <- R6::R6Class("KNNmc",
 
         if(seed == 0){
           seed <- runif(1, min=1000000000, max=9999999999)
+          seed <- signif(seed, digits = 10)
+
         }
-        write(paste("\nseed = ",as.character(seed),sep=""),file=name_file,append = TRUE)
+        write(paste("\nseed = ",seed,sep=""),file=name_file,append = TRUE)
 
 
         write(paste("NeighborNumber = ",as.character(NeighborNumber),sep=""),file=name_file,append = TRUE)
