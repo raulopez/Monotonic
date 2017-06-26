@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 
 
 monotonicTree <- function(train,test,label_class = NULL,method = "NULL",pruned = TRUE,confidence = 0.25,importance = 10,itemsetsPerLeaf = 2,porcentage = 0.8){
@@ -15,18 +14,6 @@ monotonicTreeR6 <- R6::R6Class("monotonicTree",
 
       name = "monotonicTree",
       jar = NULL,
-=======
-###OBJETO
-monotonicTree <- R6::R6Class("monotonicTree",
-    inherit = monotonicAlgorithm,
-    public = list(
-
-      confidence = 0.25,
-      itemsetsPerLeaf = 2,
-      name = "monotonicTree",
-      jar = NULL,
-      path_monotonicTree = NULL,
->>>>>>> 256c36ff291634eb269924dc0d1d583debeed7ae
 
       #Read parameters necessary
       setParameters = function(train,test,label_class = NULL,method = "NULL",pruned = TRUE,confidence = 0.25,importance = 10,itemsetsPerLeaf = 2,porcentage = 0.8){
@@ -36,7 +23,6 @@ monotonicTree <- R6::R6Class("monotonicTree",
           stop(" Label_class cannot be NULL",call. = FALSE)
 
         }else{
-<<<<<<< HEAD
 
           private$generateDir(self$name)
 
@@ -52,25 +38,6 @@ monotonicTree <- R6::R6Class("monotonicTree",
           #Jar file
           self$jar <- private$check_methods(method)
 
-=======
-          self$path_monotonicTree <- file.path(private$downloadPath,self$name)
-
-          #Delete if exist files in folder files
-          private$remove_files_folder()
-
-          #Create dataset train keel
-          path_train <- private$create_dataset(train,"dataset_monotonic-tra.dat",label_class)
-          cat("Create dataset train\n")
-          #Create dataset test keel
-          path_test <- private$create_dataset(test,"dataset_monotonic-test.dat",label_class)
-          cat("Create dataset test\n")
-
-          #Create config
-          private$create_config(path_train,path_test)
-          cat("Create config\n")
-
-          self$jar <- private$check_methods(method)
->>>>>>> 256c36ff291634eb269924dc0d1d583debeed7ae
           if(!is.null(self$jar)){
             private$insert_attributes(pruned,confidence,importance,itemsetsPerLeaf,method,porcentage)
           }
@@ -82,7 +49,6 @@ monotonicTree <- R6::R6Class("monotonicTree",
       #Execute algorithm
       run =  function(){
 
-<<<<<<< HEAD
         if(!is.null(self$jar)){
 
           #Download all jar from github
@@ -93,52 +59,21 @@ monotonicTree <- R6::R6Class("monotonicTree",
 
         }else{
           private$remove_files_folder(file.path(private$filesPath,self$name))
-=======
-        if(!is.null(self$path_monotonicTree)){
-
-          #Create folder where download jar
-          dir.create(self$path_monotonicTree,showWarnings = FALSE)
-
-          #Download all jar from github
-          private$download_jar(self$path_monotonicTree)
-
-          #Execute algorithm
-          # private$execute(self$path_monotonicTree,self$jar)
-        }else{
-          private$remove_files_folder()
->>>>>>> 256c36ff291634eb269924dc0d1d583debeed7ae
           stop("You need to call setParameters function",call. = FALSE)
         }
       },
 
-<<<<<<< HEAD
       get_measures = function(){
         output_json <- file.path(private$filesPath,self$name,"result0e0.json")
         private$measures(output_json)
       }
 
-=======
-      # print monotonic tree
-      printTree = function(){
-
-        if(file.exists(private$jsonPath)){
-          mydf <- jsonlite::fromJSON(private$jsonPath)
-          o <- lapply(mydf$decision_tree,function(x){cat(x)})
-        }else{
-          stop("Cannot read decision tree from json file\n",call. = FALSE)
-        }
-      }
->>>>>>> 256c36ff291634eb269924dc0d1d583debeed7ae
     ),
     private = list(
 
       insert_attributes = function(pruned,confidence,importance = 10,leaf,metric,porcentage){
 
-<<<<<<< HEAD
         name_file <- file.path(private$filesPath,self$name,private$configName)
-=======
-        name_file <- paste0(private$filesPath,"/",private$configName)
->>>>>>> 256c36ff291634eb269924dc0d1d583debeed7ae
 
           if(class(pruned) != "logical"){
             private$remove_files_folder()

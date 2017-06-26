@@ -3,8 +3,8 @@
 KNNmc <- function(train,test,label_class = NULL,seed = 0,NeighborNumber = 1,Neighborhood = "INRANGE",DistanceType = "EUCLIDEAN",useRMI = "YES",monotonicRMILevel = 0.1){
   alg <- KNNmcR6$new()
   alg$setParameters(train,test,label_class,seed,NeighborNumber,Neighborhood,DistanceType,useRMI,monotonicRMILevel)
-  # alg$run()
-  # return (alg$get_measures())
+  alg$run()
+  return(alg$get_measures())
 }
 
 ###OBJETO
