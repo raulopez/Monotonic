@@ -82,7 +82,7 @@ KNNmcR6 <- R6::R6Class("KNNmc",
 
         write(paste("NeighborNumber = ",as.character(NeighborNumber),sep=""),file=name_file,append = TRUE)
 
-        neigh <- dtype <- private$check_neighbourhood(Neighborhood)
+        neigh <- private$check_neighbourhood(Neighborhood)
         write(paste("Neighborhood = ",neigh,sep=""),file=name_file,append = TRUE)
 
         dtype <- private$check_distance_type(DistanceType)
