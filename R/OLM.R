@@ -1,22 +1,22 @@
 
 
-KNNmc <- function(train,test,label_class = NULL,seed = 0,NeighborNumber = 1,Neighborhood = "INRANGE",DistanceType = "EUCLIDEAN",useRMI = "YES",monotonicRMILevel = 0.1){
-  alg <- KNNmcR6$new()
-  alg$setParameters(train,test,label_class,seed,NeighborNumber,Neighborhood,DistanceType,useRMI,monotonicRMILevel)
+OLM <- function(train,test,label_class = NULL,seed = 0,ModeResolution = "Conservative",ModeClassification = "Conservative",useRMI = "YES"){
+  alg <- OLMR6$new()
+  alg$setParameters(train,test,label_class,seed,ModeResolution,ModeClassification,useRMI)
   alg$run()
   return(alg$get_measures())
 }
 
 ###OBJETO
-KNNmcR6 <- R6::R6Class("KNNmc",
+OLMR6 <- R6::R6Class("OLM",
     inherit = monotonicAlgorithm,
     public = list(
 
-      name = "KNNmc",
-      jar = "KNNmc.jar",
+      name = "OLM",
+      jar = "OLM.jar",
 
       #Read parameters necessary
-      setParameters = function(train,test,label_class,seed,NeighborNumber,Neighborhood,DistanceType,useRMI,monotonicRMILevel){
+      setParameters = function(train,test,label_class,seed,ModeResolution,ModeClassification,useRMI){
 
         if(is.null(label_class)){
           private$remove_files_folder(file.path(private$filesPath,self$name))
@@ -37,7 +37,7 @@ KNNmcR6 <- R6::R6Class("KNNmc",
 
 
           if(!is.null(self$jar)){
-            private$insert_attributes(seed,NeighborNumber,Neighborhood,DistanceType,useRMI,monotonicRMILevel)
+            private$insert_attributes(seed,ModeResolution,ModeClassification,useRMI)
           }
 
         }
@@ -69,7 +69,7 @@ KNNmcR6 <- R6::R6Class("KNNmc",
     ),
     private = list(
 
-      insert_attributes = function(seed,NeighborNumber,Neighborhood,DistanceType,useRMI,monotonicRMILevel){
+      insert_attributes = function(seed,ModeResolution,ModeClassification,useRMI){
 
         name_file <- file.path(private$filesPath,self$name,private$configName)
 
@@ -80,60 +80,54 @@ KNNmcR6 <- R6::R6Class("KNNmc",
         }
         write(paste("\nseed = ",seed,sep=""),file=name_file,append = TRUE)
 
-        write(paste("NeighborNumber = ",as.character(NeighborNumber),sep=""),file=name_file,append = TRUE)
+        m_resolution <- private$check_mode_resolutions(ModeResolution)
+        write(paste("ModeResolution = ",as.character(m_resolution),sep=""),file=name_file,append = TRUE)
 
-        neigh <- dtype <- private$check_neighbourhood(Neighborhood)
-        write(paste("Neighborhood = ",neigh,sep=""),file=name_file,append = TRUE)
-
-        dtype <- private$check_distance_type(DistanceType)
-        write(paste("DistanceType = ",as.character(dtype),sep=""),file=name_file,append = TRUE)
+        m_class <- private$check_mode_classification(ModeClassification)
+        write(paste("ModeClassification = ",as.character(m_class),sep=""),file=name_file,append = TRUE)
 
         useRMI <- private$check_userRMI(useRMI)
         write(paste("useRMI = ",as.character(useRMI),sep=""),file=name_file,append = TRUE)
 
-        if(monotonicRMILevel > 1) porcentage <- 1
-        if(monotonicRMILevel < 0) porcentage <- 0
-        write(paste("monotonicRMILevel = ",as.character(monotonicRMILevel),sep=""),file=name_file,append = TRUE)
-
       },
 
-      check_distance_type = function(name){
+      check_mode_classification = function(name){
 
-        dtype <- NULL
+        m_class <- NULL
         switch(name,
-               EUCLIDEAN={
-                 dtype <- "EUCLIDEAN"
+               Conservative={
+                 m_class <- "Conservative"
                },
                MANHATTAN={
-                 dtype <- "MANHATTAN"
-               },
-               HVDM={
-                 dtype <- "HVDM"
+                 m_class <- "MANHATTAN"
                },
                {
                  private$remove_files_folder(file.path(private$filesPath,self$name))
-                 stop("Distance type no valid. The options are: EUCLIDEAN,MANHATTAN and HVDM\n",call. = FALSE)
+                 stop("Mode classification no valid. The options are: Conservative and MANHATTAN\n",call. = FALSE)
                }
         )
-        return(dtype)
+        return(m_class)
       },
 
-      check_neighbourhood = function(name){
+      check_mode_resolutions = function(name){
 
-        neighbourhood <- NULL
+        m_resolutions <- NULL
         switch(name,
-               INRANGE ={
-                 neighbourhood <- "INRANGE"
+               Conservative ={
+                 m_resolutions <- "Conservative"
                },
-               OUTINRANGE ={
-                 neighbourhood <- "OUTINRANGE"
+               Radom ={
+                 m_resolutions <- "Radom"
+               },
+               Average ={
+                 m_resolutions <- "Average"
                },
                {
                  private$remove_files_folder(file.path(private$filesPath,self$name))
-                 stop("Neighbourhood no valid. The options are: INRANGE and OUTRANGE\n",call. = FALSE)
+                 stop("Mode Resolution no valid. The options are: Conservative, Random and Average\n",call. = FALSE)
                }
         )
-        return(neighbourhood)
+        return(m_resolutions)
       },
 
       check_userRMI = function(name){
@@ -148,7 +142,7 @@ KNNmcR6 <- R6::R6Class("KNNmc",
                },
                {
                  private$remove_files_folder(file.path(private$filesPath,self$name))
-                 stop("useRMI no valid. The options are: YES and NO\n",call. = FALSE)
+                 stop("useRMI no valid. The options are: YES or NO\n",call. = FALSE)
                }
         )
         return(useRMI)
