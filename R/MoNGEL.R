@@ -3,8 +3,8 @@
 MoNGEL <- function(train,test,label_class = NULL, seed){
   alg <- MoNGELR6$new()
   alg$setParameters(train,test,label_class,seed)
-  # alg$run()
-  # return(alg$get_measures())
+  alg$run()
+  return(alg$get_measures())
 }
 
 ###OBJETO
