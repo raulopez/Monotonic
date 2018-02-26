@@ -1,6 +1,6 @@
 
 
-MoNGEL <- function(train,test,label_class = NULL, seed){
+MoNGEL <- function(train,test,label_class = NULL, seed = NULL){
   alg <- MoNGELR6$new()
   alg$setParameters(train,test,label_class,seed)
   alg$run()
@@ -18,9 +18,9 @@ MoNGELR6 <- R6::R6Class("MoNGEL",
       #Read parameters necessary
       setParameters = function(train,test,label_class,seed){
 
-        if(is.null(label_class)){
+        if(is.null(label_class) || is.null(seed)){
           private$remove_files_folder(file.path(private$filesPath,self$name))
-          stop(" Label_class cannot be NULL",call. = FALSE)
+          stop(" Label_class or seed cannot be NULL",call. = FALSE)
 
         }else{
 
@@ -57,7 +57,7 @@ MoNGELR6 <- R6::R6Class("MoNGEL",
 
         }else{
           private$remove_files_folder(file.path(private$filesPath,self$name))
-          stop("You need to call setParameters function",call. = FALSE)
+          stop("You need call setParameters function",call. = FALSE)
         }
       },
 

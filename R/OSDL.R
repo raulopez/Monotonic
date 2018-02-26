@@ -1,11 +1,11 @@
 
 
-OSDL <- function(train,test,label_class = NULL,seed = 0,ClassificationType = "MED",Balanced = "no",Weighted = "no",
+OSDL <- function(train,test,label_class = NULL,seed = NULL,ClassificationType = "MED",Balanced = "no",Weighted = "no",
                  TuneInterpolationParameter = "no",InterpolationParameter = 0.5,LowerBound = 0,UpperBound = 1,
-                 InterpolationParameterStepSize = 10,useRMI = "yes"){
+                 InterpolationParameterStepSize = 10){
   alg <- OSDLR6$new()
   alg$setParameters(train,test,label_class,seed,ClassificationType,Balanced,Weighted,TuneInterpolationParameter,
-                    InterpolationParameter,LowerBound,UpperBound,InterpolationParameterStepSize,useRMI)
+                    InterpolationParameter,LowerBound,UpperBound,InterpolationParameterStepSize)
   alg$run()
   return(alg$get_measures())
 }
@@ -20,11 +20,11 @@ OSDLR6 <- R6::R6Class("OSDL",
 
       #Read parameters necessary
       setParameters = function(train,test,label_class,seed,ClassificationType,Balanced,Weighted,TuneInterpolationParameter,
-                               InterpolationParameter,LowerBound,UpperBound,InterpolationParameterStepSize,useRMI){
+                               InterpolationParameter,LowerBound,UpperBound,InterpolationParameterStepSize){
 
-        if(is.null(label_class)){
+        if(is.null(label_class) || is.null(seed)){
           private$remove_files_folder(file.path(private$filesPath,self$name))
-          stop(" Label_class cannot be NULL",call. = FALSE)
+          stop(" Label_class or seed cannot be NULL",call. = FALSE)
 
         }else{
 
@@ -41,8 +41,7 @@ OSDLR6 <- R6::R6Class("OSDL",
 
           if(!is.null(self$jar)){
             private$insert_attributes(seed,ClassificationType,Balanced,Weighted,TuneInterpolationParameter,
-                                      InterpolationParameter,LowerBound,UpperBound,InterpolationParameterStepSize,
-                                      useRMI)
+                                      InterpolationParameter,LowerBound,UpperBound,InterpolationParameterStepSize)
           }
 
         }
@@ -75,8 +74,7 @@ OSDLR6 <- R6::R6Class("OSDL",
     private = list(
 
       insert_attributes = function(seed,ClassificationType,Balanced,Weighted,TuneInterpolationParameter,
-                                   InterpolationParameter,LowerBound,UpperBound,InterpolationParameterStepSize,
-                                   useRMI){
+                                   InterpolationParameter,LowerBound,UpperBound,InterpolationParameterStepSize){
 
         name_file <- file.path(private$filesPath,self$name,private$configName)
 
@@ -109,8 +107,7 @@ OSDLR6 <- R6::R6Class("OSDL",
 
         write(paste("InterpolationParameterStepSize = ",as.character(InterpolationParameterStepSize),sep=""),file=name_file,append = TRUE)
 
-        useRMI <- private$check_yes_no("userRMI",useRMI)
-        write(paste("useRMI = ",as.character(useRMI),sep=""),file=name_file,append = TRUE)
+        write("useRMI = NO",file=name_file,append = TRUE)
 
       },
       check_classification_type = function(name){

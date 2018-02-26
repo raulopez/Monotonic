@@ -1,8 +1,8 @@
 
 
-OLM <- function(train,test,label_class = NULL,seed = 0,ModeResolution = "Conservative",ModeClassification = "Conservative",useRMI = "YES"){
+OLM <- function(train,test,label_class = NULL,seed = NULL,ModeResolution = "Conservative",ModeClassification = "Conservative"){
   alg <- OLMR6$new()
-  alg$setParameters(train,test,label_class,seed,ModeResolution,ModeClassification,useRMI)
+  alg$setParameters(train,test,label_class,seed,ModeResolution,ModeClassification)
   alg$run()
   return(alg$get_measures())
 }
@@ -16,11 +16,11 @@ OLMR6 <- R6::R6Class("OLM",
       jar = "OLM.jar",
 
       #Read parameters necessary
-      setParameters = function(train,test,label_class,seed,ModeResolution,ModeClassification,useRMI){
+      setParameters = function(train,test,label_class,seed,ModeResolution,ModeClassification){
 
-        if(is.null(label_class)){
+        if(is.null(label_class) || is.null(seed)){
           private$remove_files_folder(file.path(private$filesPath,self$name))
-          stop(" Label_class cannot be NULL",call. = FALSE)
+          stop(" Label_class or seed cannot be NULL",call. = FALSE)
 
         }else{
 
@@ -37,7 +37,7 @@ OLMR6 <- R6::R6Class("OLM",
 
 
           if(!is.null(self$jar)){
-            private$insert_attributes(seed,ModeResolution,ModeClassification,useRMI)
+            private$insert_attributes(seed,ModeResolution,ModeClassification)
           }
 
         }
@@ -69,7 +69,7 @@ OLMR6 <- R6::R6Class("OLM",
     ),
     private = list(
 
-      insert_attributes = function(seed,ModeResolution,ModeClassification,useRMI){
+      insert_attributes = function(seed,ModeResolution,ModeClassification){
 
         name_file <- file.path(private$filesPath,self$name,private$configName)
 
@@ -86,8 +86,7 @@ OLMR6 <- R6::R6Class("OLM",
         m_class <- private$check_mode_classification(ModeClassification)
         write(paste("ModeClassification = ",as.character(m_class),sep=""),file=name_file,append = TRUE)
 
-        useRMI <- private$check_userRMI(useRMI)
-        write(paste("useRMI = ",as.character(useRMI),sep=""),file=name_file,append = TRUE)
+        write("useRMI = NO",file=name_file,append = TRUE)
 
       },
 
@@ -98,12 +97,12 @@ OLMR6 <- R6::R6Class("OLM",
                Conservative={
                  m_class <- "Conservative"
                },
-               MANHATTAN={
-                 m_class <- "MANHATTAN"
+               Nearestneighbour={
+                 m_class <- "Nearestneighbour"
                },
                {
                  private$remove_files_folder(file.path(private$filesPath,self$name))
-                 stop("Mode classification no valid. The options are: Conservative and MANHATTAN\n",call. = FALSE)
+                 stop("Mode classification no valid. The options are: Conservative and Nearestneighbour\n",call. = FALSE)
                }
         )
         return(m_class)
@@ -116,36 +115,21 @@ OLMR6 <- R6::R6Class("OLM",
                Conservative ={
                  m_resolutions <- "Conservative"
                },
-               Radom ={
-                 m_resolutions <- "Radom"
+               Random ={
+                 m_resolutions <- "Random"
                },
                Average ={
                  m_resolutions <- "Average"
                },
+               None ={
+                 m_resolutions <- "None"
+               },
                {
                  private$remove_files_folder(file.path(private$filesPath,self$name))
-                 stop("Mode Resolution no valid. The options are: Conservative, Random and Average\n",call. = FALSE)
+                 stop("Mode Resolution no valid. The options are: Conservative, Random, Average and None\n",call. = FALSE)
                }
         )
         return(m_resolutions)
-      },
-
-      check_userRMI = function(name){
-
-        useRMI <- NULL
-        switch(name,
-               YES ={
-                 useRMI <- "YES"
-               },
-               NO ={
-                 useRMI <- "NO"
-               },
-               {
-                 private$remove_files_folder(file.path(private$filesPath,self$name))
-                 stop("useRMI no valid. The options are: YES or NO\n",call. = FALSE)
-               }
-        )
-        return(useRMI)
       }
     )
 )

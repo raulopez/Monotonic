@@ -1,8 +1,8 @@
 
 
-KNNmc <- function(train,test,label_class = NULL,seed = 0,NeighborNumber = 1,Neighborhood = "INRANGE",DistanceType = "EUCLIDEAN",useRMI = "YES",monotonicRMILevel = 0.1){
+KNNmc <- function(train,test,label_class = NULL,seed = NULL,NeighborNumber = 1,Neighborhood = "INRANGE",DistanceType = "EUCLIDEAN"){
   alg <- KNNmcR6$new()
-  alg$setParameters(train,test,label_class,seed,NeighborNumber,Neighborhood,DistanceType,useRMI,monotonicRMILevel)
+  alg$setParameters(train,test,label_class,seed,NeighborNumber,Neighborhood,DistanceType)
   alg$run()
   return(alg$get_measures())
 }
@@ -16,11 +16,11 @@ KNNmcR6 <- R6::R6Class("KNNmc",
       jar = "KNNmc.jar",
 
       #Read parameters necessary
-      setParameters = function(train,test,label_class,seed,NeighborNumber,Neighborhood,DistanceType,useRMI,monotonicRMILevel){
+      setParameters = function(train,test,label_class,seed,NeighborNumber,Neighborhood,DistanceType){
 
-        if(is.null(label_class)){
+        if(is.null(label_class) || is.null(seed)){
           private$remove_files_folder(file.path(private$filesPath,self$name))
-          stop(" Label_class cannot be NULL",call. = FALSE)
+          stop(" Label_class or seed cannot be NULL",call. = FALSE)
 
         }else{
 
@@ -37,7 +37,7 @@ KNNmcR6 <- R6::R6Class("KNNmc",
 
 
           if(!is.null(self$jar)){
-            private$insert_attributes(seed,NeighborNumber,Neighborhood,DistanceType,useRMI,monotonicRMILevel)
+            private$insert_attributes(seed,NeighborNumber,Neighborhood,DistanceType)
           }
 
         }
@@ -69,7 +69,7 @@ KNNmcR6 <- R6::R6Class("KNNmc",
     ),
     private = list(
 
-      insert_attributes = function(seed,NeighborNumber,Neighborhood,DistanceType,useRMI,monotonicRMILevel){
+      insert_attributes = function(seed,NeighborNumber,Neighborhood,DistanceType){
 
         name_file <- file.path(private$filesPath,self$name,private$configName)
 
@@ -88,12 +88,9 @@ KNNmcR6 <- R6::R6Class("KNNmc",
         dtype <- private$check_distance_type(DistanceType)
         write(paste("DistanceType = ",as.character(dtype),sep=""),file=name_file,append = TRUE)
 
-        useRMI <- private$check_userRMI(useRMI)
-        write(paste("useRMI = ",as.character(useRMI),sep=""),file=name_file,append = TRUE)
+        write("useRMI = NO",file=name_file,append = TRUE)
 
-        if(monotonicRMILevel > 1) porcentage <- 1
-        if(monotonicRMILevel < 0) porcentage <- 0
-        write(paste("monotonicRMILevel = ",as.character(monotonicRMILevel),sep=""),file=name_file,append = TRUE)
+        write("monotonicRMILevel = 0.1",file=name_file,append = TRUE)
 
       },
 
@@ -126,7 +123,7 @@ KNNmcR6 <- R6::R6Class("KNNmc",
                  neighbourhood <- "INRANGE"
                },
                OUTINRANGE ={
-                 neighbourhood <- "OUTINRANGE"
+                 neighbourhood <- "OUTRANGE"
                },
                {
                  private$remove_files_folder(file.path(private$filesPath,self$name))
@@ -134,24 +131,6 @@ KNNmcR6 <- R6::R6Class("KNNmc",
                }
         )
         return(neighbourhood)
-      },
-
-      check_userRMI = function(name){
-
-        useRMI <- NULL
-        switch(name,
-               YES ={
-                 useRMI <- "YES"
-               },
-               NO ={
-                 useRMI <- "NO"
-               },
-               {
-                 private$remove_files_folder(file.path(private$filesPath,self$name))
-                 stop("useRMI no valid. The options are: YES and NO\n",call. = FALSE)
-               }
-        )
-        return(useRMI)
       }
     )
 )
